@@ -20,8 +20,11 @@ const server = createServer(async (req, res) => {
     const password = process.env.NEWS_DESK_PASSWORD;
     if (!password) return res.writeHead(503).end('Site password is not configured.');
     const authorization = req.headers.authorization ?? '';
-    const expected = 'Basic ' + Buffer.from('Howard:' + password).toString('base64');
-    if (!timingSafeEqual(digest(authorization), digest(expected))) {
+    const encoded = authorization.match(/^Basic ([A-Za-z0-9+/]+={0,2})$/i)?.[1] ?? '';
+    const credentials = Buffer.from(encoded, 'base64').toString('utf8');
+    const separator = credentials.indexOf(':');
+    const username = separator < 0 ? '' : credentials.slice(0, separator).toLowerCase();
+    if (username !== 'howard' || !timingSafeEqual(digest(credentials.slice(separator + 1)), digest(password))) {
       return res.writeHead(401, { 'WWW-Authenticate': 'Basic realm="News Desk"', 'Cache-Control': 'no-store' }).end('Sign in to News Desk.');
     }
   }
