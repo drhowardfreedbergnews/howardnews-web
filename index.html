@@ -21,7 +21,10 @@
     </nav>
   </header>
   <main id="main">
-    <button id="toggle-navigation" class="secondary nav-toggle" aria-controls="desk-navigation" aria-expanded="true">Hide sidebar</button>
+    <div class="desk-toolbar">
+      <button id="toggle-navigation" class="secondary nav-toggle" aria-controls="desk-navigation" aria-expanded="true">Hide sidebar</button>
+      <form action="/logout" method="post" id="sign-out" hidden><button class="secondary">Sign out</button></form>
+    </div>
     <section class="intro">
       <canvas id="desk-motion" aria-hidden="true"></canvas>
       <div><time id="today"></time><h1>The News <em>Desk.</em></h1><p>Read widely. Share what matters.</p><a class="primary-link" href="#inbox">Explore today’s stories</a></div>
@@ -95,6 +98,7 @@
           <fieldset><legend>Group memberships</legend><div id="contact-groups" class="choices"></div></fieldset>
           <button>Add contact</button>
         </form>
+        <label>Find a contact<input id="contact-search" type="search" placeholder="Name or email"></label>
         <div id="contacts"></div>
       </section>
       </div>

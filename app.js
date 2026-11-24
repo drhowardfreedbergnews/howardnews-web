@@ -354,7 +354,16 @@ function render() {
   $('issue-groups').append(el('span', 'Clear all groups to include all contacts.', 'muted'));
   $('groups').replaceChildren(...state.groups.map((name) => el('span', name, 'pill')));
   checks($('contact-groups'), state.groups, []);
-  $('contacts').replaceChildren(...state.contacts.map((contact) => {
+  renderContacts();
+  renderPicks();
+  renderQueue();
+  renderPreview();
+}
+
+function renderContacts() {
+  const search = $('contact-search').value.trim().toLowerCase();
+  const visible = state.contacts.filter(({ name, email }) => (name + ' ' + email).toLowerCase().includes(search));
+  $('contacts').replaceChildren(...visible.map((contact) => {
     const row = el('details', undefined, 'contact');
     const memberships = el('div', undefined, 'choices');
     row.append(el('summary', contact.name + ' · ' + contact.email), memberships);
@@ -363,12 +372,32 @@ function render() {
       store();
       renderPreview();
     });
+    const remove = button('Remove contact', () => {
+      const index = state.contacts.indexOf(contact);
+      state.contacts.splice(index, 1);
+      store();
+      renderContacts();
+      renderPreview();
+      const status = $('contacts-status');
+      const undo = button('Undo', () => {
+        if (!state.contacts.some(({ email }) => email.toLowerCase() === contact.email.toLowerCase())) {
+          state.contacts.splice(index, 0, contact);
+          store();
+          renderContacts();
+          renderPreview();
+        }
+        status.textContent = 'Contact restored.';
+        $('contact-search').focus();
+      });
+      status.replaceChildren('Removed ' + contact.name + '. ', undo);
+      undo.focus();
+    });
+    row.append(remove);
     return row;
   }));
-  renderPicks();
-  renderQueue();
-  renderPreview();
+  if (!visible.length) $('contacts').append(el('p', search ? 'No matching contacts.' : 'No contacts yet.', 'muted'));
 }
+$('contact-search').oninput = renderContacts;
 
 $('issue-title').value = state.title;
 $('issue-title').oninput = (event) => { state.title = event.target.value; store(); renderPreview(); };
