@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: howardnews
+    runtime: node
+    plan: free
+    buildCommand: node --check server.mjs
+    startCommand: node server.mjs
+    healthCheckPath: /health
+    envVars:
+      - key: NEWS_DESK_PASSWORD
+        sync: false
