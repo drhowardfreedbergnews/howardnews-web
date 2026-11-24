@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Howard’s News Desk</title>
+  <meta name="theme-color" content="#111a30">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+  <script type="module" src="/motion.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="mast" id="desk-navigation">
+    <div class="identity"><span class="monogram" aria-hidden="true">H</span><span class="brand">Howard’s<br>News Desk</span></div>
+    <nav aria-label="Sections">
+      <a href="#inbox"><span aria-hidden="true">▤</span> Articles</a>
+      <a href="#draft"><span aria-hidden="true">✎</span> Howard’s take</a>
+      <a href="#preview"><span aria-hidden="true">◫</span> Mailing queue</a>
+      <a href="#audience"><span aria-hidden="true">◎</span> Mailing groups</a>
+    </nav>
+  </header>
+  <main id="main">
+    <button id="toggle-navigation" class="secondary nav-toggle" aria-controls="desk-navigation" aria-expanded="true">Hide sidebar</button>
+    <section class="intro">
+      <canvas id="desk-motion" aria-hidden="true"></canvas>
+      <div><time id="today"></time><h1>The News <em>Desk.</em></h1><p>Read widely. Share what matters.</p><a class="primary-link" href="#inbox">Explore today’s stories</a></div>
+    </section>
+    <nav class="workflow" aria-label="Publishing workflow">
+      <a href="#inbox"><strong>Discover</strong><span>Read, rate, and select stories</span></a>
+      <a href="#draft"><strong>Howard’s take</strong><span>Write or dictate your commentary</span></a>
+      <a href="#preview"><strong>Mailing queue</strong><span>Organize and preview by audience</span></a>
+    </nav>
+    <div class="layout">
+      <section class="panel" id="inbox">
+        <div class="bar"><div><h2>Article inbox</h2><p id="feed-status" role="status"></p></div><div class="choices"><button id="refresh" class="secondary">Refresh feed</button><button id="expand-inbox" class="secondary" aria-controls="editor-workspace" aria-pressed="false">Expand inbox</button></div></div>
+        <details><summary>Save a link</summary>
+          <form id="save-link" class="stack">
+            <label>Article URL<input name="url" type="url" required placeholder="https://…"></label>
+            <label>Headline<input name="title" required></label>
+            <label>Publisher<select id="saved-publisher" name="publisher"><option value="">Use the website name</option></select></label>
+            <button>Save link</button>
+          </form>
+        </details>
+        <div class="feed-filter">
+          <label class="check"><input id="similar-only" type="checkbox"> Similar articles only</label>
+          <label class="check"><input id="show-dismissed" type="checkbox"> Show dismissed</label>
+          <span id="match-status" class="muted" role="status"></span>
+        </div>
+        <div id="inbox-notice" class="choices muted" role="status"></div>
+        <div class="inbox-fields">
+          <label>Find a story<input id="article-search" type="search" placeholder="Search headlines"></label>
+          <label>Publisher<select id="source-filter"><option value="">All publishers</option></select></label>
+        </div>
+        <form id="add-publisher" hidden>
+          <div class="stack">
+            <label>Publisher name<input name="publisherName" required maxlength="70"></label>
+            <label>Public RSS link (optional)<input name="feedUrl" type="url" placeholder="https://publisher.example/feed"></label>
+            <div class="choices"><button>Add publisher</button><button id="cancel-publisher" class="secondary" type="button">Cancel</button></div>
+          </div>
+        </form>
+        <p id="publisher-status" class="muted" role="status"></p>
+        <details class="sources"><summary>Source status</summary><ul id="source-status"></ul></details>
+        <div id="articles"></div>
+      </section>
+      <div class="workspace" id="editor-workspace">
+      <section class="panel" id="draft">
+        <div class="bar"><h2>Howard’s take</h2><span id="draft-count" class="pill"></span></div>
+        <label>Issue title<input id="issue-title"></label>
+        <div id="picks"></div>
+      </section>
+      <section class="panel" id="preview">
+        <div class="bar"><h2>Mailing queue</h2><span id="queue-count" class="pill"></span></div>
+        <fieldset><legend>Issue audience</legend><div id="issue-groups" class="choices"></div></fieldset>
+        <label>Organize by group<select id="queue-group"></select></label>
+        <div id="queue"></div>
+        <h3 class="preview-heading">Recipient preview</h3>
+        <label>Preview as<select id="recipient"></select></label>
+        <div id="issue"></div>
+      </section>
+      <section class="panel" id="audience">
+        <h2>Mailing groups</h2>
+        <p class="muted">Contacts and group memberships are saved in this browser.</p>
+        <div class="choices">
+          <button id="export-contacts" class="secondary" type="button">Export mailing list</button>
+          <button id="import-contacts" class="secondary" type="button">Import contacts</button>
+          <input id="contacts-file" type="file" accept=".csv,.json,text/csv,application/json" hidden>
+        </div>
+        <p class="muted">Choose an Outlook contacts CSV or a News Desk mailing list export.</p>
+        <p id="contacts-status" class="muted" role="status"></p>
+        <form id="add-group" class="inline"><label>New group<input name="group" required placeholder="e.g. Colleagues"></label><button>Add group</button></form>
+        <div id="groups" class="choices"></div>
+        <form id="add-contact" class="stack">
+          <div class="inline"><label>Name<input name="name" required></label><label>Email<input name="email" type="email" required></label></div>
+          <fieldset><legend>Group memberships</legend><div id="contact-groups" class="choices"></div></fieldset>
+          <button>Add contact</button>
+        </form>
+        <div id="contacts"></div>
+      </section>
+      </div>
+    </div>
+  </main>
+  <dialog id="reader" aria-labelledby="reader-title">
+    <div class="reader-top">
+      <button id="reader-close" class="secondary" autofocus>Back to News Desk</button>
+      <a id="reader-external" target="_blank" rel="noopener noreferrer">Open publisher in new tab</a>
+    </div>
+    <div class="reader-details">
+      <p id="reader-source" class="source"></p>
+      <h2 id="reader-title"></h2>
+      <p id="reader-summary"></p>
+      <p class="muted">If the page below is blank, the publisher may block embedded reading. Use the publisher link above.</p>
+    </div>
+    <iframe id="reader-page" title="Publisher article" sandbox="allow-scripts allow-forms" referrerpolicy="no-referrer"></iframe>
+  </dialog>
+</body>
+</html>
